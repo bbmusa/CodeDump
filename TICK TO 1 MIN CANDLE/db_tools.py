@@ -1,6 +1,7 @@
 import psycopg2
 from psycopg2 import sql
 
+
 class DataUploader:
     def __init__(self, dbname, user, host, password):
         """Initialize database connection."""
@@ -15,8 +16,8 @@ class DataUploader:
         if self.conn:
             with self.conn.cursor() as cursor:
                 query = sql.SQL("""
-                    INSERT INTO mindata (datetime, open, high, low, close, volume, oi, ticker)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
+                    INSERT INTO mindata (datetime, open, high, low, close, volume, oi, token, symbol)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
                 """)
                 try:
                     cursor.execute(query, (
@@ -27,6 +28,7 @@ class DataUploader:
                         data['close'],
                         data['volume'],
                         data['oi'],
+                        data['ticker'],
                         data['symbol']
                     ))
                     self.conn.commit()  # Commit to save changes

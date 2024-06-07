@@ -7,6 +7,7 @@ class Ticker_List:
         self.csv_data = pd.read_csv('TickerList.csv')
 
     def get_filtered_data(self, kite):
+        """generate e1 option list"""
         self.kite = kite
         self.data = self.kite.instruments()
         self.data = pd.DataFrame(self.data)
@@ -21,6 +22,7 @@ class Ticker_List:
         return self.data
 
     def symbol_info(self, instrument_token):
+        """get symbol name by matching to csv"""
         symbol = self.csv_data[self.csv_data['instrument_token'] == instrument_token]['tradingsymbol']
         if not symbol.empty:
             return symbol.iloc[0]
@@ -28,6 +30,7 @@ class Ticker_List:
             logging.debug(f"{instrument_token} Not in TickerInsrtument csv db")
 
     def generate_atm_symbol(self, optionType, kite):
+        """generate Nifty atm in symbol nearest 50's """
         instrument_list = pd.read_csv('TickerList.csv')
         data = instrument_list[instrument_list['instrument_type'] == "CE"]
         data = data.sort_values(by='expiry')

@@ -2,7 +2,8 @@
 Web socket data streaming
 """
 import logging
-
+from datetime import datetime, timedelta
+import time
 import pandas as pd
 from kiteconnect import KiteTicker, KiteConnect
 
@@ -19,11 +20,21 @@ class OptionDataStreaming:
         self.ticker_list_instance = Ticker_List()
         self.TickerList = self.ticker_list_instance.get_filtered_data(kite)
         self.TickerList = pd.read_csv('TickerList.csv')
-        self.TickerList = self.TickerList['instrument_token'].tolist()[:2]
+        self.TickerList = self.TickerList['instrument_token'].tolist()[:4]
         print(self.TickerList)
         self.kws = KiteTicker(settings.API_KEY, settings.ACCESS_TOKEN, debug=True)
         self.q = queue
         self.assign_callBacks()
+        # self.synchronize_start()
+
+    # def synchronize_start(self):
+    #     """Starts the assign_callbacks at start of a min"""
+    #     now = datetime.now()
+    #     next_minute = (now + timedelta(minutes=1)).replace(second=0, microsecond=0)
+    #     time_to_next_minute = (next_minute - now).total_seconds()
+    #     print(f"Sleeping for {time_to_next_minute} sec")
+    #     time.sleep(time_to_next_minute)
+    #     self.assign_callBacks()
 
     def on_noreconnect(self, ws):
         logging.error("Reconnecting the websocket failed")
@@ -51,7 +62,6 @@ class OptionDataStreaming:
         ws.stop()
 
     def assign_callBacks(self):
-        # Assign all the callbacks
         self.kws.on_ticks = self.on_ticks
         self.kws.on_connect = self.on_connect
         self.kws.on_close = self.on_close
